@@ -1,17 +1,31 @@
 <template>
   <div>
     <el-container>
-      <el-header>Header</el-header>
+      <el-header class="homeHeader">
+        <div class="title">线上办公系统</div>
+        <el-dropdown class="userInfo">
+          <span class="el-dropdown-link">
+            {{user.name}}<i><img :src="user.userFace"></i>
+          </span>
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item>个人中心</el-dropdown-item>
+            <el-dropdown-item>设置</el-dropdown-item>
+            <el-dropdown-item>注销登录</el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
+      </el-header>
       <el-container>
         <el-aside width="200px">
-          <el-menu router>
-            <el-submenu index="1" v-for="(item,index) in this.$router.options.routes" :key="index" v-if="!item.hidden">
-
+          <el-menu router unique-opened>
+            <el-submenu :index="index+ ''" v-for="(item,index) in routes" :key="index" v-if="!item.hidden">
               <template slot="title">
-                <i class="el-icon-location"></i>
+                <i :class="item.iconCls" style="color: #1accff;margin-right: 5px"></i>
                 <span>{{ item.name }}</span>
               </template>
-                <el-menu-item :index="children.path" v-for="(children,index1) in item.children">{{ children.name }}</el-menu-item>
+              <el-menu-item :index="children.path" v-for="(children,index1) in item.children">{{
+                  children.name
+                }}
+              </el-menu-item>
             </el-submenu>
           </el-menu>
         </el-aside>
@@ -26,14 +40,41 @@
 <script>
 export default {
   name: "Home",
-  methods: {
-    menuClick(index) {
-      this.$router.push(index)
+  data() {
+    return {
+      user: JSON.parse(window.sessionStorage.getItem('user'))
+    }
+  },
+  computed: {
+    routes() {
+      return this.$store.state.routes;
     }
   }
 }
 </script>
 
 <style scoped>
+.homeHeader {
+  background: #1e87d7;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 15px;
+  box-sizing: border-box;
+}
 
+.homeHeader .title {
+  font-size: 30px;
+  font-family: 华文楷体;
+  color: white;
+}
+.homeHeader .userInfo{
+  cursor: pointer;
+}
+.el-dropdown-link img{
+  width: 48px;
+  height: 48px;
+  border-radius: 24px;
+  margin-left: 10px;
+}
 </style>
