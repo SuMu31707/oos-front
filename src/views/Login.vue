@@ -1,6 +1,13 @@
 <template>
   <div>
-    <el-form :model="loginForm" :rules="rules" ref="loginForm" class="loginContainer">
+    <el-form v-loading="loading"
+             element-loading-text="正在登录中"
+             element-loading-spinner="el-icon-loading"
+             element-loading-background="rgba(0, 0, 0, 0.8)"
+             :model="loginForm"
+             :rules="rules"
+             ref="loginForm"
+             class="loginContainer">
       <h3 class="loginTitle">系统登录</h3>
       <el-form-item label="" prop="username">
         <el-input type="text" auto-complete="false" v-model="loginForm.username" placeholder="请输入用户名"></el-input>
@@ -21,7 +28,6 @@
 </template>
 
 <script>
-import {postRequest} from "@/utils/api";
 
 export default {
   name: "Login",
@@ -34,6 +40,7 @@ export default {
         code: "",
       },
       checked: true,
+      loading: false,
       rules: {
         username: [{
           required: true,
@@ -57,8 +64,16 @@ export default {
     submitLogin() {
       this.$refs.loginForm.validate((valid) => {
         if (valid) {
-          postRequest('/login', this.loginForm).then(resp => {
-            alert(JSON.stringify(resp));
+          this.loading = true;
+          this.postRequest('/login', this.loginForm).then(resp => {
+            if (resp) {
+              this.loading = false;
+              // 存储用户token
+              const tokenStr = resp.obj.tokenHead + resp.obj.token;
+              window.sessionStorage.setItem('tokenStr', tokenStr);
+              // 跳转首页
+              this.$router.replace('/home');
+            }
           })
         } else {
           this.$message({
