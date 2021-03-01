@@ -38,7 +38,17 @@ export const formatRoutes = (routes)=>{
             iconCls: iconCls,
             children: children,
             component(resolve){
-                require(['@/views/' + component+'.vue'],resolve);
+                if (component.startsWith("Emp")){
+                    require(['@/views/emp/' + component+'.vue'],resolve);
+                }else if (component.startsWith("Per")){
+                    require(['@/views/per/' + component+'.vue'],resolve);
+                }else if (component.startsWith("Sal")){
+                    require(['@/views/sal/' + component+'.vue'],resolve);
+                }else if (component.startsWith("Sta")){
+                    require(['@/views/sta/' + component+'.vue'],resolve);
+                }else if (component.startsWith("Sys")){
+                    require(['@/views/sys/' + component+'.vue'],resolve);
+                }
             }
         }
         fmtRoutes.push(fmRouter);
