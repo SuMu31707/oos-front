@@ -29,7 +29,7 @@
         </el-table-column>
         <el-table-column
             prop="name"
-            label="职位"
+            label="职位名称"
             width="120">
         </el-table-column>
         <el-table-column
