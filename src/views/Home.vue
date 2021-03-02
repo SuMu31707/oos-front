@@ -30,6 +30,13 @@
           </el-menu>
         </el-aside>
         <el-main>
+          <el-breadcrumb separator-class="el-icon-arrow-right" v-if="this.$router.currentRoute.path!='/home'">
+            <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
+            <el-breadcrumb-item>{{ this.$router.currentRoute.name }}</el-breadcrumb-item>
+          </el-breadcrumb>
+          <div class="homeWelcome" v-if="this.$router.currentRoute.path=='/home'">
+            欢迎来到苏木在线办公系统
+          </div>
           <router-view/>
         </el-main>
       </el-container>
@@ -59,7 +66,7 @@ export default {
           window.sessionStorage.removeItem('tokenStr');
           window.sessionStorage.removeItem('user');
           // 清空菜单
-          this.$store.commit('initRoutes',[]);
+          this.$store.commit('initRoutes', []);
           // 跳转到登录页
           this.$router.replace('/');
         }).catch(() => {
@@ -112,5 +119,12 @@ export default {
   height: 48px;
   border-radius: 24px;
   margin-left: 10px;
+}
+.homeWelcome {
+  text-align: center;
+  font-size: 50px;
+  font-family: 华文楷体;
+  color: #1e87d7;
+  padding-top: 50px;
 }
 </style>
