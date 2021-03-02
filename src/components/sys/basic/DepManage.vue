@@ -1,12 +1,10 @@
 <template>
-  <div>
-    Test2
-  </div>
+<div>部门管理</div>
 </template>
 
 <script>
 export default {
-  name: "Test2"
+name: "DepManage"
 }
 </script>
 

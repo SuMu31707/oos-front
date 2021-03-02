@@ -2,7 +2,7 @@
   <div>
     <el-container>
       <el-header class="homeHeader">
-        <div class="title">线上办公系统</div>
+        <div class="title">苏木线上办公系统</div>
         <el-dropdown class="userInfo" @command="handleCommand">
           <span class="el-dropdown-link">
             {{ user.name }}<i><img :src="user.userFace"></i>
@@ -37,7 +37,7 @@
           <div class="homeWelcome" v-if="this.$router.currentRoute.path=='/home'">
             欢迎来到苏木在线办公系统
           </div>
-          <router-view/>
+          <router-view class="homeRouterView"/>
         </el-main>
       </el-container>
     </el-container>
@@ -120,11 +120,16 @@ export default {
   border-radius: 24px;
   margin-left: 10px;
 }
+
 .homeWelcome {
   text-align: center;
   font-size: 50px;
   font-family: 华文楷体;
   color: #1e87d7;
   padding-top: 50px;
+}
+
+.homeRouterView {
+  margin-top: 8px;
 }
 </style>
