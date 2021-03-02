@@ -23,7 +23,7 @@ router.beforeEach((to, from, next) => {
         if (!window.sessionStorage.getItem('user')) {
             return getRequest('/admin/info').then(resp => {
                 if (resp) {
-                  console.log(resp)
+                    console.log(resp)
                     // 存入用户信息
                     window.sessionStorage.setItem('user', JSON.stringify(resp));
                     next();
@@ -32,7 +32,11 @@ router.beforeEach((to, from, next) => {
         }
         next();
     } else {
-        next();
+        if (to.path == '/') {
+            next();
+        } else {
+            next('/?redirect=' + to.path);
+        }
     }
 })
 
