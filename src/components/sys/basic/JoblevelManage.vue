@@ -66,6 +66,33 @@
         </el-table-column>
       </el-table>
     </div>
+    <el-dialog width="35%" title="编辑职称" :visible.sync="dialogFormVisible">
+      <el-form :model="updateJl">
+        <el-form-item style="width: 68.5%" label="职称名称" :label-width="formLabelWidth">
+          <el-input v-model="updateJl.name" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="职称等级" :label-width="formLabelWidth">
+          <el-select v-model="updateJl.titleLevel" placeholder="选择等级">
+            <el-option v-for="tl in tls" :label="tl" :value="tl"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="是否启用" :label-width="formLabelWidth">
+          <el-switch
+              style="display: block;margin-top: 9px"
+              v-model="updateJl.enabled"
+              active-color="#13ce66"
+              inactive-color="#ff4949"
+              active-text="已启用"
+              inactive-text="未启用">
+          </el-switch>
+        </el-form-item>
+
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="doUpdateJl">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -85,7 +112,14 @@ export default {
         '初级',
         '员级'
       ],
-      jls: []
+      jls: [],
+      updateJl: {
+        name: '',
+        titleLevel: '',
+        enabled: false
+      },
+      dialogFormVisible: false,
+      formLabelWidth: '120px'
     }
   },
   mounted() {
@@ -113,7 +147,17 @@ export default {
       }
     },
     showEditView(index, data) {
-
+      Object.assign(this.updateJl, data);
+      this.updateJl.createDate = '';
+      this.dialogFormVisible = true;
+    },
+    doUpdateJl() {
+      this.putRequest('/system/basic/joblevel/', this.updateJl).then(resp=>{
+        if (resp){
+          this.initJls();
+          this.dialogFormVisible = false;
+        }
+      })
     },
     handleDelete(index, data) {
       this.$confirm('此操作将永久删除《' + data.name + '》职称, 是否继续?', '提示', {
@@ -137,6 +181,8 @@ export default {
 }
 </script>
 
-<style scoped>
-
+<style>
+.el-form-item__label {
+  color: #1e87d7;
+}
 </style>
