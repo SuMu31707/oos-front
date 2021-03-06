@@ -37,6 +37,15 @@
             label="创建时间"
             width="200">
         </el-table-column>
+        <el-table-column
+            prop="enabled"
+            label="是否启用"
+            width="150">
+          <template slot-scope="scope">
+            <el-tag type="success" v-if="scope.row.enabled">已启用</el-tag>
+            <el-tag v-else type="danger">未启用</el-tag>
+          </template>
+        </el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
             <el-button
@@ -50,11 +59,6 @@
             </el-button>
           </template>
         </el-table-column>
-        <!--        <el-table-column-->
-        <!--            prop="enabled"-->
-        <!--            label="是否启用"-->
-        <!--            width="120">-->
-        <!--        </el-table-column>-->
       </el-table>
     </div>
     <el-button size="small" style="margin-top: 8px" type="danger" :disabled="this.multipleSelection.length==0" @click="batchDelete">批量删除
@@ -66,6 +70,17 @@
       <div>
         <el-tag>职位名称</el-tag>
         <el-input v-model="updatePos.name" size="small" class="updatePosInput"></el-input>
+      </div>
+      <div style="margin-top: 10px;display: flex;align-items: center">
+        <el-tag>是否启用</el-tag>
+        <el-switch
+            style="display: block;margin-left: 8px"
+            v-model="updatePos.enabled"
+            active-color="#13ce66"
+            inactive-color="#ff4949"
+            active-text="已启用"
+            inactive-text="未启用">
+        </el-switch>
       </div>
       <span slot="footer" class="dialog-footer">
         <el-button size="small" @click="dialogVisible = false">取 消</el-button>
@@ -86,7 +101,8 @@ export default {
       positions: [],
       dialogVisible: false,
       updatePos: {
-        name: ''
+        name: '',
+        enabled: false
       },
       multipleSelection: []
     }
