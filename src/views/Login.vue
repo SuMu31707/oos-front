@@ -73,7 +73,7 @@ export default {
               window.sessionStorage.setItem('tokenStr', tokenStr);
               // 页面跳转
               let path = this.$route.query.redirect;
-
+              console.log('跳转目标：'+ path)
               this.$router.replace((path == '/' || path == undefined) ? '/home' : path);
             }
           })
@@ -83,6 +83,7 @@ export default {
             message: '请输入所有必填项！',
             type: 'error'
           });
+          this.loading = false;
           return false;
         }
       });
