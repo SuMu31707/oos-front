@@ -2,11 +2,18 @@
   <div>
     <div style="display: flex;justify-content: space-between">
       <div>
-        <el-input type="text" style="width: 300px;margin-right: 5px" placeholder="请输入员工姓名进行搜索..." prefix-icon="el-icon-search"></el-input>
-        <el-button type="primary" icon="el-icon-search">搜索</el-button>
+        <el-input v-model="empName"
+                  @keydown.enter.native="initEmps"
+                  clearable
+                  @clear="initEmps"
+                  type="text" style="width: 300px;margin-right: 5px"
+                  placeholder="请输入员工姓名进行搜索..."
+                  prefix-icon="el-icon-search"></el-input>
+        <el-button type="primary" icon="el-icon-search" @click="initEmps">搜索</el-button>
         <el-button type="primary" icon="el-icon-search">
           <i class="fa fa-angle-double-down" aria-hidden="true"></i>
-          高级搜索</el-button>
+          高级搜索
+        </el-button>
       </div>
       <div>
         <el-button type="success"><i class="fa fa-level-down" aria-hidden="true"></i>导入数据</el-button>
@@ -43,7 +50,6 @@
         <el-table-column
             prop="gender"
             label="性别"
-            align="left"
             width="40">
         </el-table-column>
         <el-table-column
@@ -74,13 +80,13 @@
             prop="nativePlace"
             label="籍贯"
             align="left"
-            width="60">
+            width="85">
         </el-table-column>
         <el-table-column
             prop="politicsStatus.name"
             label="政治面貌"
             align="left"
-            width="95">
+            width="110">
         </el-table-column>
         <el-table-column
             prop="email"
@@ -95,11 +101,11 @@
             width="100">
         </el-table-column>
         <el-table-column
-          prop="address"
-          label="联系地址"
-          align="left"
-          width="270">
-      </el-table-column>
+            prop="address"
+            label="联系地址"
+            align="left"
+            width="270">
+        </el-table-column>
         <el-table-column
             prop="department.name"
             label="部门"
@@ -171,7 +177,8 @@
             align="left"
             width="90">
           <template slot-scope="scope">
-            <el-tag>{{scope.row.contractTerm}}</el-tag> 年
+            <el-tag>{{ scope.row.contractTerm }}</el-tag>
+            年
           </template>
         </el-table-column>
         <el-table-column
@@ -186,6 +193,15 @@
           </template>
         </el-table-column>
       </el-table>
+      <div style="display: flex;justify-content: flex-end">
+        <el-pagination
+            background
+            @current-change="currentChange"
+            @size-change="sizeChange"
+            layout="sizes, prev, pager, next, jumper, ->, total"
+            :total="total">
+        </el-pagination>
+      </div>
     </div>
   </div>
 </template>
@@ -194,21 +210,34 @@
 export default {
   name: "EmpBasic",
   data() {
-    return{
+    return {
       emps: [],
-      loading: false
+      loading: false,
+      total: 0,
+      currentPage: 1,
+      size: 10,
+      empName: ''
     }
   },
   mounted() {
     this.initEmps();
   },
-  methods:{
-    initEmps(){
+  methods: {
+    sizeChange(size) {
+      this.size = size;
+      this.initEmps();
+    },
+    currentChange(currentPage) {
+      this.currentPage = currentPage;
+      this.initEmps();
+    },
+    initEmps() {
       this.loading = true;
-      this.getRequest('/employee/basic/').then(resp=>{
+      this.getRequest('/employee/basic/?currentPage=' + this.currentPage + '&size=' + this.size + '&name=' + this.empName).then(resp => {
         this.loading = false;
-        if (resp){
+        if (resp) {
           this.emps = resp.data;
+          this.total = resp.total;
         }
       })
     }
