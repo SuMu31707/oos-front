@@ -5,6 +5,7 @@ import store from './store'
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 import {deleteRequest, getRequest, postRequest, putRequest} from "@/utils/api";
+import {downloadRequest} from "@/utils/download";
 import {initMenu} from "@/utils/menus";
 import 'font-awesome/css/font-awesome.css'
 
@@ -15,6 +16,7 @@ Vue.prototype.postRequest = postRequest;
 Vue.prototype.getRequest = getRequest;
 Vue.prototype.putRequest = putRequest;
 Vue.prototype.deleteRequest = deleteRequest;
+Vue.prototype.downloadRequest = downloadRequest;
 
 router.beforeEach((to, from, next) => {
     if (window.sessionStorage.getItem('tokenStr')) {
@@ -26,6 +28,7 @@ router.beforeEach((to, from, next) => {
                     console.log(resp)
                     // 存入用户信息
                     window.sessionStorage.setItem('user', JSON.stringify(resp));
+                    store.commit('INIT_ADMIN', resp);
                     next();
                 }
             })

@@ -10,9 +10,9 @@
       <el-tab-pane label="职称管理" name="JoblevelManage">
         <JoblevelManage></JoblevelManage>
       </el-tab-pane>
-      <el-tab-pane label="奖惩规则" name="EcManage">
-        <EcManage></EcManage>
-      </el-tab-pane>
+<!--      <el-tab-pane label="奖惩规则" name="EcManage">-->
+<!--        <EcManage></EcManage>-->
+<!--      </el-tab-pane>-->
       <el-tab-pane label="权限组" name="PermissManage">
         <PermissManage></PermissManage>
       </el-tab-pane>

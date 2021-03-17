@@ -6,7 +6,8 @@
           prefix-icon="el-icon-search"
           v-model="filterText">
       </el-input>
-
+    </div>
+    <div style="width: 500px;margin-top: 10px">
       <el-tree
           :data="deps"
           :props="defaultProps"
@@ -56,14 +57,11 @@
           </table>
         </div>
         <span slot="footer" class="dialog-footer">
-    <el-button @click="dialogVisible = false">取 消</el-button>
-    <el-button type="primary" @click="doAddDep">确 定</el-button>
-  </span>
+          <el-button @click="dialogVisible = false">取 消</el-button>
+          <el-button type="primary" @click="doAddDep">确 定</el-button>
+        </span>
       </el-dialog>
-
-
     </div>
-    <div></div>
   </div>
 </template>
 

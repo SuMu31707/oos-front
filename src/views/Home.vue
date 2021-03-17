@@ -2,17 +2,25 @@
   <div>
     <el-container>
       <el-header class="homeHeader">
-        <div class="title">苏木线上办公系统</div>
-        <el-dropdown class="userInfo" @command="handleCommand">
+        <div class="title">人事管理系统</div>
+        <div>
+          <el-button size="normal"
+                     icon="el-icon-bell"
+                     type="text"
+                     @click="goChat"
+                     style="font-size: 20px;color: white;margin-right: 15px">
+          </el-button>
+          <el-dropdown class="userInfo" @command="handleCommand">
           <span class="el-dropdown-link">
             {{ user.name }}<i><img :src="user.userFace"></i>
           </span>
-          <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item command="userinfo">个人中心</el-dropdown-item>
-            <el-dropdown-item command="setting">设置</el-dropdown-item>
-            <el-dropdown-item command="logout">注销登录</el-dropdown-item>
-          </el-dropdown-menu>
-        </el-dropdown>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item command="userinfo">个人中心</el-dropdown-item>
+              <el-dropdown-item command="setting">设置</el-dropdown-item>
+              <el-dropdown-item command="logout">注销登录</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
+        </div>
       </el-header>
       <el-container>
         <el-aside width="200px">
@@ -35,7 +43,7 @@
             <el-breadcrumb-item>{{ this.$router.currentRoute.name }}</el-breadcrumb-item>
           </el-breadcrumb>
           <div class="homeWelcome" v-if="this.$router.currentRoute.path=='/home'">
-            欢迎来到苏木在线办公系统
+            欢迎来到人事管理系统
           </div>
           <router-view class="homeRouterView"/>
         </el-main>
@@ -49,10 +57,13 @@ export default {
   name: "Home",
   data() {
     return {
-      user: JSON.parse(window.sessionStorage.getItem('user'))
+      // user: JSON.parse(window.sessionStorage.getItem('user'))
     }
   },
   methods: {
+    goChat() {
+      // this.$router.push('/chat')
+    },
     handleCommand(command) {
       if (command == 'logout') {
         this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
@@ -76,11 +87,17 @@ export default {
           });
         });
       }
+      if (command == 'userinfo'){
+        this.$router.push('/userinfo')
+      }
     }
   },
   computed: {
     routes() {
       return this.$store.state.routes;
+    },
+    user() {
+      return this.$store.state.currentAdmin;
     }
   }
 }
