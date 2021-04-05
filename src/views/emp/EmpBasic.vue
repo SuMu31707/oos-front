@@ -166,146 +166,138 @@
           style="width: 100%">
         <el-table-column
             type="selection"
-            width="55">
-        </el-table-column>
+            width="55"/>
         <el-table-column
             prop="name"
             label="姓名"
             fixed
-            align="left"
-            width="90">
-        </el-table-column>
+            align="center"
+            width="60"/>
         <el-table-column
             prop="workID"
             label="工号"
-            align="left"
-            width="85">
-        </el-table-column>
+            align="center"
+            width="80"/>
         <el-table-column
             prop="gender"
             label="性别"
-            width="85">
-        </el-table-column>
+            align="center"
+            width="45"/>
         <el-table-column
             prop="birthday"
-            align="left"
-            width="95"
-            label="出生日期">
-        </el-table-column>
+            align="center"
+            width="90"
+            label="出生日期"/>
         <el-table-column
             prop="idCard"
-            align="left"
+            align="center"
             width="150"
-            label="身份证号码">
-        </el-table-column>
+            label="身份证号码"/>
         <el-table-column
             prop="wedlock"
             width="70"
-            label="婚姻状况">
-        </el-table-column>
+            align="center"
+            label="婚姻状况"/>
         <el-table-column
             prop="nation.name"
             width="50"
-            label="民族">
-        </el-table-column>
+            align="center"
+            label="民族"/>
         <el-table-column
             prop="nativePlace"
             width="80"
-            label="籍贯">
-        </el-table-column>
+            align="center"
+            label="籍贯"/>
         <el-table-column
             prop="politicsStatus.name"
-            label="政治面貌">
-        </el-table-column>
+            label="政治面貌"
+            align="center"
+            width="100"/>
         <el-table-column
             prop="email"
             align="left"
-            width="180"
-            label="电子邮件">
-        </el-table-column>
+            width="170"
+            label="电子邮件"/>
         <el-table-column
             prop="phone"
-            align="left"
+            align="center"
             width="100"
-            label="电话号码">
-        </el-table-column>
+            label="电话号码"/>
         <el-table-column
             prop="address"
             align="left"
-            width="220"
-            label="联系地址">
-        </el-table-column>
+            width="270"
+            label="联系地址"/>
         <el-table-column
             prop="department.name"
-            align="left"
+            align="center"
             width="100"
-            label="所属部门">
-        </el-table-column>
+            label="所属部门"/>
         <el-table-column
             prop="position.name"
             width="100"
-            label="职位">
-        </el-table-column>
+            align="center"
+            label="职位"/>
         <el-table-column
             prop="joblevel.name"
             width="100"
-            label="职称">
-        </el-table-column>
+            align="center"
+            label="职称"/>
         <el-table-column
             prop="engageForm"
-            align="left"
-            width="100"
-            label="聘用形式">
-        </el-table-column>
+            align="center"
+            width="80"
+            label="聘用形式"/>
         <el-table-column
             prop="tiptopDegree"
+            align="center"
             label="最高学历">
         </el-table-column>
         <el-table-column
             prop="school"
-            align="left"
+            align="center"
             width="150"
             label="毕业院校">
         </el-table-column>
         <el-table-column
             prop="specialty"
-            align="left"
+            align="center"
             width="150"
             label="专业">
         </el-table-column>
         <el-table-column
             prop="workState"
-            align="left"
+            align="center"
             width="70"
             label="在职状态">
         </el-table-column>
         <el-table-column
             prop="beginDate"
-            align="left"
+            align="center"
             width="95"
             label="入职日期">
         </el-table-column>
         <el-table-column
             prop="conversionTime"
-            align="left"
+            align="center"
             width="95"
             label="转正日期">
         </el-table-column>
         <el-table-column
             prop="beginContract"
-            align="left"
+            align="center"
             width="95"
             label="合同起始日期">
         </el-table-column>
         <el-table-column
             prop="endContract"
-            align="left"
+            align="center"
             width="95"
             label="合同截止日期">
         </el-table-column>
         <el-table-column
-            align="left"
-            width="100"
+            align="center"
+            width="80"
             label="合同期限">
           <template slot-scope="scope">
             <el-tag>{{ scope.row.contractTerm }}</el-tag>
@@ -315,7 +307,8 @@
         <el-table-column
             fixed="right"
             width="200"
-            label="操作">
+            label="操作"
+            align="center">
           <template slot-scope="scope">
             <el-button style="padding: 3px" size="mini"
                        @click="showEditEmpView(scope.row)">编辑

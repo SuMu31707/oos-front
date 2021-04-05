@@ -28,6 +28,7 @@ service.interceptors.response.use(
     console.log(error);
   }
 );
+
 let base = '';
 export const downloadRequest = (url, params) => {
   return service({
