@@ -149,6 +149,9 @@
               <el-button type="primary"
                          @click="initEmps('advanced')">搜索
               </el-button>
+              <el-button type="info"
+                         @click="resetParams()">重置
+              </el-button>
             </el-col>
           </el-row>
         </div>
@@ -343,9 +346,9 @@
                           prefix-icon="el-icon-edit"></el-input>
               </el-form-item>
             </el-col>
-            <el-col :span="5">
+            <el-col :span="5" >
               <el-form-item label="性别：" prop="gender">
-                <el-radio-group v-model="emp.gender">
+                <el-radio-group v-model="emp.gender" style="margin-top: 9px">
                   <el-radio label="男">男</el-radio>
                   <el-radio label="女">女</el-radio>
                 </el-radio-group>
@@ -561,7 +564,7 @@
             </el-col>
             <el-col :span="8">
               <el-form-item label="聘用形式：" prop="engageForm">
-                <el-radio-group v-model="emp.engageForm">
+                <el-radio-group v-model="emp.engageForm" style="margin-top: 9px">
                   <el-radio label="劳动合同">劳动合同</el-radio>
                   <el-radio label="劳务合同">劳务合同</el-radio>
                 </el-radio-group>
@@ -569,7 +572,7 @@
             </el-col>
             <el-col :span="8">
               <el-form-item label="婚姻状况：" prop="wedlock">
-                <el-radio-group v-model="emp.wedlock">
+                <el-radio-group v-model="emp.wedlock" style="margin-top: 9px">
                   <el-radio label="已婚">已婚</el-radio>
                   <el-radio label="未婚">未婚</el-radio>
                   <el-radio label="离异">离异</el-radio>
@@ -754,20 +757,12 @@ export default {
           required: true, message: '请输入合同期限',
           trigger: 'blur'
         }],
-        conversionTime: [{
-          required: true, message: '请输入转正日期',
-          trigger: 'blur'
-        }],
         notWorkDate: [{
           required: true, message: '请输入离职日期',
           trigger: 'blur'
         }],
         beginContract: [{
           required: true, message: '请输入合同起始日期',
-          trigger: 'blur'
-        }],
-        endContract: [{
-          required: true, message: '请输入合同结束日期',
           trigger: 'blur'
         }],
         workAge: [{
@@ -783,6 +778,19 @@ export default {
     this.initPositions();
   },
   methods: {
+    resetParams() {
+      this.searchValue = {
+        politicId: null,
+        nationId: null,
+        jobLevelId: null,
+        posId: null,
+        engageForm: '',
+        departmentId: null,
+        beginDateScope: null
+      };
+      this.inputDepName = '';
+      this.initEmps();
+    },
     showAdvanceSearchView() {
       this.showAdvanceSearchVisible = !this.showAdvanceSearchVisible;
       this.searchValue = {

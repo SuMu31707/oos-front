@@ -79,6 +79,7 @@
       <el-table
           :data="SalaryAdjusts"
           style="width: 100%"
+          :header-cell-style="{background:'#F5F7FA',color:'#606266'}"
           @selection-change="handleSelectionChange"
           v-loading="loading"
           element-loading-text="正在拼命加载..."
@@ -219,7 +220,7 @@
                     @keyup.enter.native="empQuery"
                 />
               </el-form-item>
-              <el-form-item label="调后职位" prop="removeDate">
+              <el-form-item label="所属职位" prop="removeDate">
                 <el-select clearable v-model="queryEmpParams.posId"
                            placeholder="请选择职位">
                   <el-option
@@ -257,7 +258,7 @@
           </el-col>
         </el-row>
         <!--修改时显示-->
-        <el-form :model="form">
+        <el-form :model="form" :rules="rules" ref="form">
           <el-row :gutter="20" style="margin-top: 20px">
             <el-col :span="6">
               <el-form-item v-if="form.empName" label="员工姓名:" prop="name">
@@ -266,7 +267,7 @@
               </el-form-item>
             </el-col>
             <el-col :span="6">
-              <el-form-item label="调薪日期：" prop="birthday">
+              <el-form-item label="调薪日期:" prop="asDate">
                 <el-date-picker
                     v-model="form.asDate"
                     type="date"
@@ -277,13 +278,13 @@
               </el-form-item>
             </el-col>
             <el-col :span="6">
-              <el-form-item label="调前薪资:" prop="name">
+              <el-form-item label="调前薪资:" prop="beforeSalary">
                 <el-input style="width: 180px" v-model="form.beforeSalary" placeholder="请输入员工姓名"
                           prefix-icon="el-icon-edit"></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="6">
-              <el-form-item label="调后薪资:" prop="name">
+              <el-form-item label="调后薪资:" prop="afterSalary">
                 <el-input style="width: 180px" v-model="form.afterSalary" placeholder="请输入员工姓名"
                           prefix-icon="el-icon-edit"></el-input>
               </el-form-item>
@@ -291,13 +292,13 @@
           </el-row>
           <el-row :gutter="20">
             <el-col :span="12">
-              <el-form-item label="调薪原因:" prop="name">
+              <el-form-item label="调薪原因:" prop="reason">
                 <el-input size="mini" v-model="form.reason" type="textarea" placeholder="请输入调薪原因"
                           prefix-icon="el-icon-edit"></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item label="备注信息:" prop="name">
+              <el-form-item label="备注信息:" prop="remark">
                 <el-input size="mini" v-model="form.remark" type="textarea" placeholder="请输入备注信息"
                           prefix-icon="el-icon-edit"></el-input>
               </el-form-item>
@@ -318,6 +319,20 @@ export default {
   name: "PerSalary",
   data() {
     return {
+      rules: {
+        asDate: [
+          { required: true, message: '请选择调薪日期', trigger: 'blur' }
+        ],
+        reason: [
+          { required: true, message: '请输入调薪原因', trigger: 'blur' }
+        ],
+        afterSalary: [
+          { required: true, message: '请输入调后薪资', trigger: 'blur' }
+        ],
+        beforeSalary: [
+          { required: true, message: '请输入调前薪资', trigger: 'blur' }
+        ],
+      },
       filterText: undefined,
       queryEmpParams: {
         name: '',
@@ -336,14 +351,22 @@ export default {
       SalaryAdjusts: [],
       multipleSelection: [],
       empSelects: [],
-      multiple: false,
+      multiple: true,
       total: 0,
       currentPage: 1,
       currentSize: 10,
       loading: false,
       title: '新增调薪信息',
       open: false,
-      form: {},
+      form: {
+        empName: '',
+        workID: '',
+        beforeSalary: null,
+        afterSalary: null,
+        asDate: '',
+        reason: '',
+        remark: ''
+      },
       queryParams: {
         empName: '',
         workID: '',
@@ -383,7 +406,7 @@ export default {
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.title = '修改调薪信息';
-      this.form = row;
+      Object.assign(this.form, row);
       this.open = true;
     },
     /** 删除按钮操作 */
@@ -484,29 +507,35 @@ export default {
       };
     },
     cancel() {
-      this.initAdjusts();
       this.open = false;
       this.reset();
       this.queryEmpParams.departmentId = null;
     },
     submitForm() {
-      if (this.form.id) {
-        this.putRequest('/personnel/salary/', this.form).then(resp => {
-          if (resp) {
-            this.open = false;
-            this.initAdjusts();
+      this.$refs['form'].validate((valid) => {
+        if (valid) {
+          if (this.form.id) {
+            this.putRequest('/personnel/salary/', this.form).then(resp => {
+              if (resp) {
+                this.open = false;
+                this.initAdjusts();
+              }
+            })
+          } else {
+            console.log("form:" + JSON.stringify(this.form))
+            let url = '/personnel/salary/?asDate=' + this.form.asDate + '&beforeSalary=' + this.form.beforeSalary + '&afterSalary=' + this.form.afterSalary + '&reason=' + this.form.reason + '&remark=' + this.form.remark + '&ids=' + this.empSelects;
+            this.postRequest(url).then(resp => {
+              if (resp) {
+                this.open = false;
+                this.initAdjusts();
+              }
+            })
           }
-        })
-      } else {
-        console.log("form:" + JSON.stringify(this.form))
-        let url = '/personnel/salary/?asDate=' + this.form.asDate + '&beforeSalary=' + this.form.beforeSalary + '&afterSalary=' + this.form.afterSalary + '&reason=' + this.form.reason + '&remark=' + this.form.remark + '&ids=' + this.empSelects;
-        this.postRequest(url).then(resp => {
-          if (resp) {
-            this.open = false;
-            this.initAdjusts();
-          }
-        })
-      }
+        } else {
+          console.log('error submit!!');
+          return false;
+        }
+      });
     },
     empQuery() {
       this.initEmps();

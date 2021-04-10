@@ -4,19 +4,18 @@
       <el-header class="homeHeader">
         <div class="title">人事管理系统</div>
         <div>
-          <el-button size="normal"
-                     icon="el-icon-bell"
-                     type="text"
-                     @click="goChat"
-                     style="font-size: 20px;color: white;margin-right: 15px">
-          </el-button>
+<!--          <el-button size="normal"-->
+<!--                     icon="el-icon-bell"-->
+<!--                     type="text"-->
+<!--                     @click="goChat"-->
+<!--                     style="font-size: 20px;color: white;margin-right: 15px">-->
+<!--          </el-button>-->
           <el-dropdown class="userInfo" @command="handleCommand">
           <span class="el-dropdown-link">
             {{ user.name }}<i><img :src="user.userFace"></i>
           </span>
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item command="userinfo">个人中心</el-dropdown-item>
-              <el-dropdown-item command="setting">设置</el-dropdown-item>
               <el-dropdown-item command="logout">注销登录</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>

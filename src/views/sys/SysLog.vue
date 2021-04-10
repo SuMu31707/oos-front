@@ -171,7 +171,7 @@ export default {
     return {
       opLogs: [],
       multipleSelection: [],
-      multiple: false,
+      multiple: true,
       total: 0,
       currentPage: 1,
       size: 10,

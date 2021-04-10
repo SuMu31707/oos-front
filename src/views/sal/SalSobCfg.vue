@@ -1,8 +1,16 @@
 <template>
   <div>
-    <div></div>
+    <div style="display: flex;justify-content: center;margin-top: 8px;margin-bottom: 10px">
+      <el-input v-model="keywords" style="width: 500px;margin-right: 5px" placeholder="通过用户名搜索..."
+                prefix-icon="el-icon-search" @keydown.enter.native="initEmps" @clear="initEmps" clearable></el-input>
+      <el-button type="primary" icon="el-icon-search" @click="initEmps">搜索</el-button>
+    </div>
     <div>
       <el-table
+          v-loading="loading"
+          element-loading-text="正在加载..."
+          element-loading-spinner="el-icon-loading"
+          element-loading-background="rgba(0, 0, 0, 0.8)"
           :data="emps"
           border
           stripe>
@@ -136,6 +144,8 @@ export default {
   name: "SalSobCfg",
   data() {
     return {
+      loading: false,
+      keywords: '',
       emps: [],
       currentPage: 1,
       size: 10,
@@ -181,7 +191,14 @@ export default {
       this.initEmps();
     },
     initEmps() {
-      this.getRequest('/salary/sobcfg/?currentPage=' + this.currentPage + '&size=' + this.size).then(resp => {
+      this.loading = true;
+      let url = '/salary/sobcfg/?currentPage=' + this.currentPage + '&size=' + this.size;
+      if (this.keywords){
+        url += '&empName=' + this.keywords;
+
+      }
+      this.getRequest(url).then(resp => {
+        this.loading = false;
         if (resp) {
           this.emps = resp.data;
           this.total = resp.total;

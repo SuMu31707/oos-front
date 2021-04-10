@@ -41,7 +41,7 @@
       </el-form-item>
     </el-form>
 
-    <el-row :gutter="10" class="mb8">
+    <el-row :gutter="10" style="margin-bottom: 5px">
       <el-col :span="1.5">
         <el-button
             type="primary"
@@ -95,6 +95,7 @@
     </el-row>
 
     <el-table style="width: 100%"
+              :header-cell-style="{background:'#F5F7FA',color:'#606266'}"
               v-loading="loading"
               element-loading-text="正在拼命加载..."
               element-loading-spinner="el-icon-loading"
@@ -112,7 +113,6 @@
       <el-table-column
           label="操作"
           align="center"
-          width="160"
           class-name="small-padding fixed-width"
       >
         <template slot-scope="scope">
@@ -145,7 +145,7 @@
 
     <!-- 添加或修改参数配置对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="600px" append-to-body>
-      <el-form ref="form" :model="form" label-width="80px">
+      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-row>
           <el-col :span="12">
             <el-form-item label="员工工号" prop="workID">
@@ -177,7 +177,7 @@
         </el-row>
         <el-row>
           <el-col :span="24">
-            <el-form-item label="考评内容">
+            <el-form-item label="考评内容" prop="appContent">
               <el-input v-model="form.appContent" type="textarea" placeholder="请输入内容"></el-input>
             </el-form-item>
           </el-col>
@@ -185,7 +185,7 @@
         <el-row>
           <el-col :span="24">
             <el-form-item label="备注">
-              <el-input v-model="form.remark" type="textarea" placeholder="请输入内容"></el-input>
+              <el-input v-model="form.remark" type="textarea" placeholder="请输入备注信息（如培训地点、培训时间）"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
@@ -203,6 +203,20 @@ export default {
   name: "PerAppraise",
   data() {
     return {
+      rules: {
+        appDate: [
+          { required: true, message: '请选择考评日期', trigger: 'blur' }
+        ],
+        appResult: [
+          { required: true, message: '请输入考评结果', trigger: 'blur' }
+        ],
+        appContent: [
+          { required: true, message: '请输入考评内容', trigger: 'blur' }
+        ],
+        workID: [
+          { required: true, message: '请输入员工工号', trigger: 'blur' }
+        ],
+      },
       // 查询参数
       queryParams: {
         empName: '',
@@ -222,7 +236,14 @@ export default {
       // 用户表格数据
       emps: [],
       // 表单参数
-      form: {},
+      form: {
+        empName: '',
+        workID: '',
+        appDate: '',
+        appResult: '',
+        appContent: '',
+        remark: ''
+      },
       title: '添加考评信息',
       open: false,
       currentPage: 1,
@@ -293,11 +314,11 @@ export default {
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
-      this.title = '修改调动信息';
+      this.title = '修改考评信息';
       if (this.multipleSelection.length == 1) {
-        this.form = this.multipleSelection[0];
+        Object.assign(this.form, this.multipleSelection[0]);
       } else {
-        this.form = row;
+        Object.assign(this.form, row);
       }
       this.open = true;
     },
@@ -349,26 +370,32 @@ export default {
       });
     },
     cancel() {
-      this.initAppraiseInfo();
       this.open = false;
       this.reset();
     },
     submitForm() {
-      if (this.form.id) {
-        this.putRequest('/personnel/appraise/', this.form).then(resp => {
-          if (resp) {
-            this.open = false;
-            this.initAppraiseInfo();
+      this.$refs['form'].validate((valid) => {
+        if (valid) {
+          if (this.form.id) {
+            this.putRequest('/personnel/appraise/', this.form).then(resp => {
+              if (resp) {
+                this.open = false;
+                this.initAppraiseInfo();
+              }
+            })
+          } else {
+            this.postRequest('/personnel/appraise/', this.form).then(resp => {
+              if (resp) {
+                this.open = false;
+                this.initAppraiseInfo();
+              }
+            })
           }
-        })
-      } else {
-        this.postRequest('/personnel/appraise/', this.form).then(resp => {
-          if (resp) {
-            this.open = false;
-            this.initAppraiseInfo();
-          }
-        })
-      }
+        } else {
+          console.log('error submit!!');
+          return false;
+        }
+      });
     },
   }
 }

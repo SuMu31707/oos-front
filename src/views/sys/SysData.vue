@@ -130,7 +130,7 @@ export default {
       currentPage: 1,
       size: 10,
       multipleSelection: [],
-      multiple: false
+      multiple: true
     }
   },
   mounted() {

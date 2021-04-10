@@ -25,7 +25,7 @@
                 @keyup.enter.native="handleQuery"
             />
           </el-form-item>
-          <el-form-item label="考评时间">
+          <el-form-item label="调动时间">
             <el-date-picker
                 v-model="queryParams.beginDateScope"
                 size="small"
@@ -77,6 +77,7 @@
           :data="removes"
           border
           stripe
+          :header-cell-style="{background:'#F5F7FA',color:'#606266'}"
           @selection-change="handleSelectionChange">
         <el-table-column
             type="selection"
@@ -171,7 +172,7 @@
       </div>
       <!-- 添加或修改参数配置对话框 -->
       <el-dialog :title="title" :visible.sync="open" width="600px" append-to-body>
-        <el-form ref="form" :model="form" label-width="80px">
+        <el-form ref="form" :model="form" :rules="rules" label-width="80px">
           <el-row>
             <el-col :span="12">
               <el-form-item label="员工工号" prop="workID">
@@ -191,12 +192,12 @@
                     value-format="yyyy-MM-dd"
                     v-model="form.removeDate"
                     type="date"
-                    placeholder="请选择考评日期">
+                    placeholder="请选择调动日期">
                 </el-date-picker>
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item label="调后职位" prop="removeDate">
+              <el-form-item label="调后职位" prop="afterPosId">
                 <el-select v-model="form.afterPosId"
                            placeholder="职位">
                   <el-option
@@ -211,19 +212,19 @@
           </el-row>
           <el-row>
             <el-col :span="24">
-                <el-form-item label="调后部门" prop="afterDepId">
-                  <el-select v-model="depName" placeholder="请选择部门">
-                    <el-option style="height: auto">
-                      <el-tree :data="allDeps" :props="defaultProps" @node-click="handleNodeClick"></el-tree>
-                    </el-option>
-                  </el-select>
+              <el-form-item label="调后部门" prop="adepName">
+                <el-select v-model="depName" placeholder="请选择部门">
+                  <el-option style="height: auto">
+                    <el-tree :data="allDeps" :props="defaultProps" @node-click="handleNodeClick"></el-tree>
+                  </el-option>
+                </el-select>
 
-                </el-form-item>
+              </el-form-item>
             </el-col>
           </el-row>
           <el-row>
             <el-col :span="24">
-              <el-form-item label="调动原因">
+              <el-form-item label="调动原因" prop="reason">
                 <el-input v-model="form.reason" type="textarea" placeholder="请输入内容"></el-input>
               </el-form-item>
             </el-col>
@@ -264,14 +265,42 @@ export default {
       currentSize: 10,
       multiple: true,
       multipleSelection: [],
-      form: {},
+      form: {
+        eid: null,
+        beforeDepId: null,
+        afterDepId: null,
+        beforePosId: null,
+        afterPosId: null,
+        removeDate: '',
+        reason: '',
+        remark: '',
+        empName: '',
+        workID: ''
+      },
       title: '添加调动信息',
       open: false,
       defaultProps: {
         children: 'children',
         label: 'name'
       },
-      depName: ''
+      depName: '',
+      rules: {
+        workID: [
+          {required: true, message: '请输入员工工号', trigger: 'blur'}
+        ],
+        reason: [
+          {required: true, message: '请输入调动原因', trigger: 'blur'}
+        ],
+        adepName: [
+          {required: true, message: '请选择调后部门', trigger: 'blur'}
+        ],
+        afterPosId: [
+          {required: true, message: '请选择调后职位', trigger: 'blur'}
+        ],
+        removeDate: [
+          {required: true, message: '请选择调动日期', trigger: 'blur'}
+        ],
+      }
     }
   },
   mounted() {
@@ -280,21 +309,21 @@ export default {
   },
   methods: {
     handleNodeClick(data) {
-      this.depName = data.name
-      this.form.afterDepId = data.id
+      this.depName = data.name;
+      this.form.afterDepId = data.id;
     },
     batchDelete() {
-      this.$confirm('此操作将永久删除选中的[' + this.multipleSelection.length + ']条考评信息, 是否继续?', '提示', {
+      this.$confirm('此操作将永久删除选中的[' + this.multipleSelection.length + ']条调动信息, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
         let ids = '?';
-        this.multipleSelection.forEach(item=>{
+        this.multipleSelection.forEach(item => {
           ids += 'ids=' + item.id + '&';
         })
-        this.deleteRequest('/personnel/remove/'+ids).then(resp=>{
-          if (resp){
+        this.deleteRequest('/personnel/remove/' + ids).then(resp => {
+          if (resp) {
             this.initRemoves();
           }
         })
@@ -307,7 +336,6 @@ export default {
     },
     /** 删除按钮操作 */
     handleDelete(data) {
-      alert(data.id)
       this.$confirm('此操作将永久删除【' + data.empName + '】的考评信息, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -327,13 +355,11 @@ export default {
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
-      this.title = '修改考评信息';
-      if (this.multipleSelection.length == 1){
-        this.form = this.multipleSelection[0];
-      } else {
-        this.form = row;
-        this.depName = row.adepName
-      }
+      this.title = '修改调动信息';
+
+      this.form = row;
+      Object.assign(this.form, row);
+      this.depName = row.adepName;
       this.open = true;
     },
     /** 新增按钮操作 */
@@ -344,26 +370,32 @@ export default {
       this.open = true;
     },
     cancel() {
-      this.initRemoves();
       this.open = false;
       this.reset();
     },
     submitForm() {
-      if (this.form.id){
-        this.putRequest('/personnel/remove/',this.form).then(resp=>{
-          if (resp){
-            this.open = false;
-            this.initRemoves();
+      this.$refs['form'].validate((valid) => {
+        if (valid) {
+          if (this.form.id) {
+            this.putRequest('/personnel/remove/', this.form).then(resp => {
+              if (resp) {
+                this.open = false;
+                this.initRemoves();
+              }
+            })
+          } else {
+            this.postRequest('/personnel/remove/', this.form).then(resp => {
+              if (resp) {
+                this.open = false;
+                this.initRemoves();
+              }
+            })
           }
-        })
-      } else {
-        this.postRequest('/personnel/remove/',this.form).then(resp=>{
-          if (resp){
-            this.open = false;
-            this.initRemoves();
-          }
-        })
-      }
+        } else {
+          console.log('error submit!!');
+          return false;
+        }
+      });
     },
     // 表单重置
     reset() {
@@ -397,7 +429,7 @@ export default {
       this.currentPage = currentPage;
       this.initRemoves();
     },
-    initRemoves(){
+    initRemoves() {
       let url = '/personnel/remove/?currentPage=' + this.currentPage + '&size=' + this.currentSize;
       if (this.queryParams.empName) {
         url += '&empName=' + this.queryParams.empName;
@@ -408,8 +440,8 @@ export default {
       if (this.queryParams.beginDateScope) {
         url += '&beginDateScope=' + this.queryParams.beginDateScope;
       }
-      this.getRequest(url).then(resp=>{
-        if (resp){
+      this.getRequest(url).then(resp => {
+        if (resp) {
           this.total = resp.total;
           this.removes = resp.data;
         }

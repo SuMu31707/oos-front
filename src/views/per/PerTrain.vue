@@ -84,6 +84,7 @@
           element-loading-text="正在拼命加载..."
           element-loading-spinner="el-icon-loading"
           element-loading-background="rgba(0, 0, 0, 0.8)"
+          :header-cell-style="{background:'#F5F7FA',color:'#606266'}"
           border
           stripe>
         <el-table-column type="selection" width="50" align="center"/>
@@ -142,7 +143,6 @@
             >修改
             </el-button>
             <el-button
-                v-if="scope.row.userId !== 1"
                 size="mini"
                 type="text"
                 icon="el-icon-delete"
@@ -214,7 +214,7 @@
                     @keyup.enter.native="empQuery"
                 />
               </el-form-item>
-              <el-form-item label="调后职位" prop="removeDate">
+              <el-form-item label="所属职位" prop="removeDate">
                 <el-select clearable v-model="queryEmpParams.posId"
                            placeholder="请选择职位">
                   <el-option
@@ -254,10 +254,10 @@
           </el-col>
         </el-row>
         <!--修改时显示-->
-        <el-form :model="form">
+        <el-form :model="form" :rules="rules" ref="form">
           <el-row :gutter="20" style="margin-top: 20px">
             <el-col :span="12">
-              <el-form-item v-if="form.empName" label="员工姓名:" prop="name">
+              <el-form-item v-if="form.empName" label="员工姓名:" prop="empName">
                 <el-input disabled style="width: 220px" v-model="form.empName" placeholder="请输入员工姓名"
                           prefix-icon="el-icon-edit"></el-input>
               </el-form-item>
@@ -268,7 +268,7 @@
                     v-model="form.trainDate"
                     type="date"
                     value-format="yyyy-MM-dd"
-                    placeholder="选择调薪日期">
+                    placeholder="选择培训日期">
                 </el-date-picker>
               </el-form-item>
             </el-col>
@@ -281,7 +281,7 @@
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item label="备注信息:" prop="name">
+              <el-form-item label="备注信息:" prop="remark">
                 <el-input style="width: 220px" v-model="form.remark" type="textarea" placeholder="请输入备注信息"
                           prefix-icon="el-icon-edit"></el-input>
               </el-form-item>
@@ -302,6 +302,14 @@ export default {
   name: "PerTrain",
   data() {
     return {
+      rules: {
+        trainDate: [
+          { required: true, message: '请选择培训日期', trigger: 'blur' }
+        ],
+        trainContent: [
+          { required: true, message: '请输入培训内容', trigger: 'blur' }
+        ]
+      },
       filterText: undefined,
       queryEmpParams: {
         name: '',
@@ -320,14 +328,25 @@ export default {
       empTrains: [],
       multipleSelection: [],
       empSelects: [],
-      multiple: false,
+      multiple: true,
       total: 0,
       currentPage: 1,
       currentSize: 10,
       loading: false,
       title: '新增培训信息',
       open: false,
-      form: {},
+      form: {
+        id: null,
+        eid: null,
+        trainDate: '',
+        trainContent: '',
+        remark: '',
+        empName: '',
+        email: '',
+        phone: '',
+        workID: '',
+        depName: ''
+      },
       queryParams: {
         empName: '',
         trainContent: '',
@@ -371,7 +390,7 @@ export default {
     handleUpdate(row) {
       this.dialogWidth = '40%'
       this.title = '修改培训信息';
-      this.form = row;
+      Object.assign(this.form,row);
       this.open = true;
     },
     /** 删除按钮操作 */
@@ -475,28 +494,34 @@ export default {
       };
     },
     cancel() {
-      this.initTrains();
       this.open = false;
       this.reset();
       this.queryEmpParams.departmentId = null;
     },
     submitForm() {
-      if (this.form.id) {
-        this.putRequest('/personnel/train/', this.form).then(resp => {
-          if (resp) {
-            this.open = false;
-            this.initTrains();
+      this.$refs['form'].validate((valid) => {
+        if (valid) {
+          if (this.form.id) {
+            this.putRequest('/personnel/train/', this.form).then(resp => {
+              if (resp) {
+                this.open = false;
+                this.initTrains();
+              }
+            })
+          } else {
+            let url = '/personnel/train/?trainDate=' + this.form.trainDate + '&trainContent=' + this.form.trainContent + '&remark=' + this.form.remark + '&ids=' + this.empSelects;
+            this.postRequest(url).then(resp => {
+              if (resp) {
+                this.open = false;
+                this.initTrains();
+              }
+            })
           }
-        })
-      } else {
-        let url = '/personnel/train/?trainDate=' + this.form.trainDate + '&trainContent=' + this.form.trainContent + '&remark=' + this.form.remark + '&ids=' + this.empSelects;
-        this.postRequest(url).then(resp => {
-          if (resp) {
-            this.open = false;
-            this.initTrains();
-          }
-        })
-      }
+        } else {
+          console.log('error submit!!');
+          return false;
+        }
+      });
     },
     empQuery() {
       this.initEmps();

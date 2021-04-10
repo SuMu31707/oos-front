@@ -35,8 +35,8 @@ export default {
     return {
       captchaUrl: "/captcha?time=" + new Date(),
       loginForm: {
-        username: "admin",
-        password: "123",
+        username: 'admin',
+        password: '123',
         code: "",
       },
       checked: true,
