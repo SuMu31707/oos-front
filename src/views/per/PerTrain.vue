@@ -228,6 +228,9 @@
               <el-form-item>
                 <el-button type="primary" icon="el-icon-search" @click="empQuery">搜索</el-button>
               </el-form-item>
+              <el-form-item>
+                <el-button type="info" icon="el-icon-refresh" @click="resetQueryParam">重置</el-button>
+              </el-form-item>
             </el-form>
 
             <el-table v-loading="loading"
@@ -355,7 +358,7 @@ export default {
       emps: [],
       allPos: [],
       allDeps: [],
-      dialogWidth: '80%'
+      dialogWidth: '85%'
     }
   },
   watch: {
@@ -380,7 +383,7 @@ export default {
       this.initTrains();
     },
     handleAdd() {
-      this.dialogWidth = '80%'
+      this.dialogWidth = '85%'
       this.reset();
       this.initEmps();
       this.title = '添加培训信息'
@@ -411,6 +414,19 @@ export default {
           message: '已取消删除'
         });
       });
+    },
+    resetQueryParam() {
+      this.queryEmpParams = {
+        name: '',
+        workID: '',
+        departmentId: null,
+        posId: null,
+        beginDate: null,
+        total: 0,
+        currentPage: 1,
+        currentSize: 10
+      };
+      this.initEmps();
     },
     batchDelete() {
       this.$confirm('此操作将永久删除选中的[' + this.multipleSelection.length + ']条调薪信息, 是否继续?', '提示', {

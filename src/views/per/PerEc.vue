@@ -355,7 +355,7 @@ export default {
         ecPoint: null
       },
       filterText: undefined,
-      empEcs: {},
+      empEcs: [],
       total: 0,
       currentPage: 1,
       currentSize: 10,

@@ -1,10 +1,154 @@
 <template>
-<div>综合信息统计</div>
+
+  <div class="com-page">
+    <div style="width: 800px; height: 500px" class="map" ref="map"/>
+    <Seller></Seller>
+  </div>
+
 </template>
 
+
 <script>
+import mapJson from 'echarts/map/json/china.json'
+import Seller from "@/components/sta/Seller";
+
 export default {
-  name: "StaAll"
+  name: "StaAll",
+  components: {
+    Seller
+  },
+  data() {
+    return {
+      data: [], // 坐标点数据，格式 {name: 'xxx', value: [经度,纬度]}
+      option: {
+        title: {
+          left: 'center',
+          textStyle: {
+            fontSize: 16,
+          }
+        }
+      },
+    };
+  },
+  mounted() {
+    this.initEMap();
+  },
+  methods: {
+    initEMap() {
+        //注册地图
+        this.$echarts.registerMap('china', mapJson);
+        this.chart = this.$echarts.init(this.$refs.map);
+        this.renderMap('china');
+    },
+    getMapList() { //请求坐标点的方法
+      return new Promise((resolve) => {
+        serve.getMapList({}).then(res => {
+          this.data = res.data
+          resolve()
+        })
+      })
+    },
+    renderMap(map) { //绘制地图
+      this.option.title.subtext = "";
+      //地理坐标系组件
+      this.option.geo = {//引入地图 ，渲染地图凹凸显示
+        map: map,
+        label: {
+          normal: {
+            show: true,
+            color: '#fff'
+          },
+          emphasis: {
+            show: false,
+            color: '#fff'
+          }
+        },
+        roam: true,//禁止缩放
+        zoom: 1,
+        itemStyle: {
+          normal: {
+            borderColor: '#2D8AFF',//地图边界线的颜色
+            areaColor: '#2D8AFF',//地图整体区域的颜色
+            shadowColor: '#226BCB',// 阴影颜色
+            shadowBlur: 10,
+            shadowOffsetY: 10
+          },
+          emphasis: {
+            areaColor: '#0062E8'//鼠标滑过的颜色
+          }
+        }
+      },
+          // 地图标点
+          this.option.series = [
+            {
+              name: '点',
+              type: 'scatter',
+              coordinateSystem: 'geo',
+              symbol: 'pin', //关系图节点标记的图形
+              symbolSize: [20, 20],
+              symbolOffset: [0, '-40%'],//关系图节点标记相对于原本位置的偏移。[0, '50%']
+              large: true,
+              itemStyle: {//===============图形样式，有 normal 和 emphasis 两个状态。normal 是图形在默认状态下的样式；emphasis 是图形在高亮状态下的样式，比如在鼠标悬浮或者图例联动高亮时。
+                normal: { //默认样式
+                  label: {
+                    show: true
+                  },
+                  borderType: 'solid', //图形描边类型，默认为实线，支持 'solid'（实线）, 'dashed'(虚线), 'dotted'（点线）。
+                  borderColor: '#30CEDA', //设置图形边框为淡金色,透明度为0.4
+                  borderWidth: 1, //图形的描边线宽。为 0 时无描边。
+                  opacity: 1,
+                  color: ' #30CEDA',
+                  // 图形透明度。支持从 0 到 1 的数字，为 0 时不绘制该图形。默认0.5
+
+                },
+                emphasis: {//高亮状态，格式同normal
+
+                }
+              },
+              lineStyle: { //==========关系边的公用线条样式。
+                normal: {
+                  color: '#30CEDA',
+                  width: '3',
+                  type: 'dotted', //线的类型 'solid'（实线）'dashed'（虚线）'dotted'（点线）
+                  curveness: 0.3, //线条的曲线程度，从0到1
+                  opacity: 1
+                  // 图形透明度。支持从 0 到 1 的数字，为 0 时不绘制该图形。默认0.5
+                },
+                emphasis: {//高亮状态
+
+                }
+              },
+              label: { //=============图形上的文本标签
+                normal: {
+                  show: false,//是否显示标签。
+                  position: 'inside',//标签的位置。['50%', '50%'] [x,y]
+                  textStyle: { //标签的字体样式
+                    color: '#cde6c7', //字体颜色
+                    fontStyle: 'normal',//文字字体的风格 'normal'标准 'italic'斜体 'oblique' 倾斜
+                    fontWeight: 'bolder',//'normal'标准'bold'粗的'bolder'更粗的'lighter'更细的或100 | 200 | 300 | 400...
+                    fontFamily: 'sans-serif', //文字的字体系列
+                    fontSize: 12, //字体大小
+                  }
+                },
+                emphasis: {//高亮状态
+
+                }
+              },
+              edgeLabel: {//==============线条的边缘标签
+                normal: {
+                  show: false
+                },
+                emphasis: {//高亮状态
+                }
+              },
+              zlevel: 12,
+              data: this.data,
+            }
+          ];
+      //渲染地图
+      this.chart.setOption(this.option);
+    }
+  }
 }
 </script>
 

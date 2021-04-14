@@ -168,7 +168,7 @@
       </div>
 
       <!-- 添加或修改参数配置对话框 -->
-      <el-dialog :title="title" @open="showDialog" :visible.sync="open" width="80%">
+      <el-dialog :title="title" @open="showDialog" :visible.sync="open" width="85%">
         <!--添加时显示-->
         <el-row v-if="!form.id" :gutter="20">
           <!--部门数据-->
@@ -233,6 +233,9 @@
               </el-form-item>
               <el-form-item>
                 <el-button type="primary" icon="el-icon-search" @click="empQuery">搜索</el-button>
+              </el-form-item>
+              <el-form-item>
+                <el-button type="info" icon="el-icon-refresh" @click="resetQueryParam">重置</el-button>
               </el-form-item>
             </el-form>
 
@@ -597,6 +600,19 @@ export default {
         return 'warning-row';
       }
       return '';
+    },
+    resetQueryParam() {
+      this.queryEmpParams = {
+        name: '',
+        workID: '',
+        departmentId: null,
+        posId: null,
+        beginDate: null,
+        total: 0,
+        currentPage: 1,
+        currentSize: 10
+      };
+      this.initEmps();
     },
     initData() {
       if (!window.sessionStorage.getItem("allDeps")) {

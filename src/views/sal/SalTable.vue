@@ -27,7 +27,10 @@
           <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
         </el-form-item>
         <el-form-item style="float: right">
-          <el-button type="success" icon="el-icon-pie-chart" @click="">结算本月薪资</el-button>
+          <el-button  size="normal" type="success" plain round @click="calculationSalaries()">
+            <i class="fa fa-calculator" aria-hidden="true" style="color: green;margin-right: 5px"></i>
+            <span>结算薪资</span>
+          </el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -84,7 +87,7 @@
             align="center"
             width="150"/>
         <el-table-column
-            label="积分月份"
+            label="结算月份"
             align="center"
             width="150">
           <template slot-scope="scope">
@@ -92,35 +95,74 @@
           </template>
         </el-table-column>
         <el-table-column
-            prop="payable"
             label="应发工资"
             align="center"
-            width="120"/>
+            width="150">
+          <template slot-scope="scope">
+            <el-tag type="warning">{{ (scope.row.payable)}} 元</el-tag>
+          </template>
+        </el-table-column>
         <el-table-column
-            prop="accFund"
             label="住房公积金扣除"
             align="center"
-            width="120"/>
+            width="120">
+          <template slot-scope="scope">
+            <el-tag type="danger">{{ (scope.row.accFund)}} 元</el-tag>
+          </template>
+        </el-table-column>
         <el-table-column
-            prop="medical"
             label="医疗保险扣除"
             align="center"
-            width="120"/>
+            width="120">
+          <template slot-scope="scope">
+            <el-tag type="danger">{{ (scope.row.medical)}} 元</el-tag>
+          </template>
+        </el-table-column>
         <el-table-column
-            prop="pension"
             label="养老保险扣除"
             align="center"
-            width="120"/>
+            width="120">
+          <template slot-scope="scope">
+            <el-tag type="danger">{{ (scope.row.pension)}} 元</el-tag>
+          </template>
+        </el-table-column>
         <el-table-column
-            prop="tax"
             label="个人所得税扣除"
             align="center"
-            width="120"/>
+            width="120">
+          <template slot-scope="scope">
+            <el-tag type="danger">{{ (scope.row.tax)}} 元</el-tag>
+          </template>
+        </el-table-column>
         <el-table-column
-            prop="netSalary"
             label="实发工资"
-            align="center"/>
+            align="center">
+          <template slot-scope="scope">
+            <el-tag effect="dark" type="success">{{ (scope.row.netSalary)}} 元</el-tag>
+          </template>
+        </el-table-column>
       </el-table>
+      <el-dialog
+          title="清空员工积分记录"
+          center
+          :visible.sync="dialogVisible"
+          width="30%">
+        <div>
+          <span>选择月份：</span>
+          <el-date-picker
+              v-model="dropMonth"
+              style="width: 240px"
+              value-format="yyyy-MM-dd"
+              type="month"
+              placeholder="选择要清空的月份">
+          </el-date-picker>
+        </div>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="dialogVisible = false">取 消</el-button>
+          <el-button type="primary" @click="dropEmpSalaries()">确 定</el-button>
+        </span>
+      </el-dialog>
+
       <!--分页-->
       <div style="display: flex;justify-content: flex-end;margin-top: 5px">
         <el-pagination
@@ -138,6 +180,8 @@ export default {
   name: "SalTable",
   data() {
     return {
+      dropMonth: null,
+      dialogVisible: false,
       loading: false,
       multipleSelection: [],
       multiple: true,
@@ -155,8 +199,38 @@ export default {
     this.initEmpSalaries();
   },
   methods: {
+    calculationSalaries() {
+      this.$confirm('此操作将结算所有员工的本月薪资, 若本月已存在结算记录, 新的结算记录将覆盖旧的记录, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.getRequest('/salary/table/calculation').then(resp=>{
+          if (resp){
+            this.initEmpSalaries();
+          }
+        });
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消结算'
+        });
+      });
+    },
+    dropEmpSalaries() {
+      this.dialogVisible = false;
+      this.deleteRequest('/salary/table/'+this.dropMonth).then(resp=>{
+        if (resp){
+          this.initEmpSalaries();
+        }
+      })
+    },
+    batchDrop() {
+      this.dialogVisible = true;
+      this.dropMonth = null;
+    },
     handleBatchDelete() {
-      this.$confirm('此操作将永久删除选中的 ' + this.multipleSelection.length + ' 条积分记录, 是否继续?', '提示', {
+      this.$confirm('此操作将永久删除选中的 ' + this.multipleSelection.length + ' 条薪资记录, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
@@ -165,29 +239,11 @@ export default {
         this.multipleSelection.forEach(item => {
           ids += 'ids=' + item.id + '&';
         })
-        this.deleteRequest('/statistics/' + ids).then(resp => {
+        this.deleteRequest('/salary/table/' + ids).then(resp => {
           if (resp) {
-            this.initEmpPoint();
+            this.initEmpSalaries();
           }
         })
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: '已取消删除'
-        });
-      });
-    },
-    handleDelete(data) {
-      this.$confirm('此操作将永久删除【' + data.empName + '】的积分记录, 是否继续?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        this.deleteRequest('/statistics/?ids=' + data.id).then(resp => {
-          if (resp) {
-            this.initEmpPoint();
-          }
-        });
       }).catch(() => {
         this.$message({
           type: 'info',

@@ -16,32 +16,38 @@
         <el-table-column
             prop="name"
             label="账套名称"
-            width="120">
+            width="150"
+            align="center">
         </el-table-column>
         <el-table-column
             prop="basicSalary"
             label="基本工资"
-            width="70">
+            width="90"
+            align="center">
         </el-table-column>
         <el-table-column
             prop="trafficSalary"
             label="交通补助"
-            width="70">
+            width="90"
+            align="center">
         </el-table-column>
         <el-table-column
             prop="lunchSalary"
             label="午餐补助"
-            width="70">
+            width="90"
+            align="center">
         </el-table-column>
         <el-table-column
             prop="bonus"
             label="奖金"
-            width="70">
+            width="90"
+            align="center">
         </el-table-column>
         <el-table-column
             prop="createDate"
             label="创建时间"
-            width="120">
+            width="120"
+            align="center">
         </el-table-column>
         <el-table-column
             label="养老金"
@@ -49,12 +55,14 @@
           <el-table-column
               prop="pensionPer"
               label="比率"
-              width="70">
+              width="70"
+              align="center">
           </el-table-column>
           <el-table-column
               prop="pensionBase"
               label="基数"
-              width="70">
+              width="70"
+              align="center">
           </el-table-column>
         </el-table-column>
         <el-table-column
@@ -63,12 +71,14 @@
           <el-table-column
               prop="medicalPer"
               label="比率"
-              width="70">
+              width="70"
+              align="center">
           </el-table-column>
           <el-table-column
               prop="medicalBase"
               label="基数"
-              width="70">
+              width="70"
+              align="center">
           </el-table-column>
         </el-table-column>
         <el-table-column
@@ -77,16 +87,19 @@
           <el-table-column
               prop="accumulationFundPer"
               label="比率"
-              width="70">
+              width="70"
+              align="center">
           </el-table-column>
           <el-table-column
               prop="accumulationFundBase"
               label="基数"
-              width="70">
+              width="70"
+              align="center">
           </el-table-column>
         </el-table-column>
         <el-table-column
-            label="操作">
+            label="操作"
+            align="center">
           <template slot-scope="scope">
             <el-button type="primary" @click="showEditView(scope.row)">编辑</el-button>
             <el-button type="danger" @click="deleteSalary(scope.row)">删除</el-button>
@@ -203,14 +216,14 @@ export default {
     },
     nextStep() {
       if (this.activeItemIndex == 10) {
-        if (this.salary.id){
-          this.putRequest('/salary/sob/',this.salary).then(resp=>{
-            if (resp){
+        if (this.salary.id) {
+          this.putRequest('/salary/sob/', this.salary).then(resp => {
+            if (resp) {
               this.initSalaries();
               this.dialogVisible = false;
             }
           })
-        }else {
+        } else {
           this.postRequest('/salary/sob/', this.salary).then(resp => {
             this.initSalaries();
             this.dialogVisible = false;

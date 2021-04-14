@@ -8,6 +8,11 @@ import {deleteRequest, getRequest, postRequest, putRequest} from "@/utils/api";
 import {downloadRequest} from "@/utils/download";
 import {initMenu} from "@/utils/menus";
 import 'font-awesome/css/font-awesome.css'
+import './assets/css/global.less'
+import 'echarts/map/js/china'
+import echarts from "echarts";
+
+Vue.prototype.$echarts = echarts;
 
 Vue.config.productionTip = false
 Vue.use(ElementUI,{size: 'small'})

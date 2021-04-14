@@ -206,7 +206,7 @@ export default {
       labelWidth: '150px',
       loading: false,
       multiple: true,
-      ecRules: {},
+      ecRules: [],
       total: 0,
       currentPage: 1,
       currentSize: 10,
