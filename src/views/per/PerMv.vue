@@ -64,14 +64,14 @@
           >批量删除
           </el-button>
         </el-col>
-        <el-col :span="1.5">
-          <el-button
-              type="warning"
-              plain
-              icon="el-icon-download"
-          >导出数据
-          </el-button>
-        </el-col>
+<!--        <el-col :span="1.5">-->
+<!--          <el-button-->
+<!--              type="warning"-->
+<!--              plain-->
+<!--              icon="el-icon-download"-->
+<!--          >导出数据-->
+<!--          </el-button>-->
+<!--        </el-col>-->
       </el-row>
       <el-table
           :data="removes"

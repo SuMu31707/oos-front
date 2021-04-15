@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="zhengti">
     <el-container>
       <el-header class="homeHeader">
         <div class="title">人事管理系统</div>
@@ -65,7 +65,7 @@ export default {
     },
     handleCommand(command) {
       if (command == 'logout') {
-        this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+        this.$confirm('此操作将退出登录, 是否继续?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
@@ -110,6 +110,11 @@ export default {
   justify-content: space-between;
   padding: 0 15px;
   box-sizing: border-box;
+}
+.el-container {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
 }
 
 .homeHeader .title {

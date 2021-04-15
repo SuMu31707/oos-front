@@ -12,6 +12,8 @@ import './assets/css/global.less'
 import 'echarts/map/js/china'
 import echarts from "echarts";
 
+import '../public/static/theme/chalk'
+
 Vue.prototype.$echarts = echarts;
 
 Vue.config.productionTip = false

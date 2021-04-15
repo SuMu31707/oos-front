@@ -1,157 +1,218 @@
 <template>
+  <div class="screen-container">
+    <div class="screen-body">
+      <section class="screen-left">
 
-  <div class="com-page">
-    <div style="width: 800px; height: 500px" class="map" ref="map"/>
-    <Seller></Seller>
+        <div id="left-top" :class="[fullScreenStatus.depNum ? 'fullscreen' : '']">
+          <!-- 部门人数占比图表 -->
+          <dep-num ref="depNum"></dep-num>
+          <div class="resize">
+            <!-- icon-compress-alt -->
+            <i @click="changeSize('depNum')" :class="['fa', fullScreenStatus.depNum ? 'fa-compress' : 'fa-expand']" aria-hidden="true"></i>
+          </div>
+        </div>
+
+        <div id="left-bottom" :class="[fullScreenStatus.empSalaries ? 'fullscreen' : '']">
+          <!-- 员工薪资图表 -->
+          <emp-salaries ref="empSalaries"></emp-salaries>
+          <div class="resize">
+            <!-- icon-compress-alt -->
+            <i @click="changeSize('empSalaries')" :class="['fa', fullScreenStatus.empSalaries ? 'fa-compress' : 'fa-expand']" aria-hidden="true"></i>
+          </div>
+        </div>
+
+      </section>
+      <section class="screen-middle">
+
+        <div id="middle-top" :class="[fullScreenStatus.mapRef ? 'fullscreen' : '']">
+          <!-- 员工分布图表 -->
+          <single-map ref="mapRef"></single-map>
+          <div class="resize">
+            <!-- icon-compress-alt -->
+            <i @click="changeSize('mapRef')" :class="['fa', fullScreenStatus.mapRef ? 'fa-compress' : 'fa-expand']" aria-hidden="true"></i>
+          </div>
+        </div>
+
+        <div id="middle-bottom" :class="[fullScreenStatus.depSalaries ? 'fullscreen' : '']">
+          <!-- 部门薪资排行图表 -->
+          <dep-salaries ref="depSalaries"></dep-salaries>
+          <div class="resize">
+            <!-- icon-compress-alt -->
+            <i @click="changeSize('depSalaries')" :class="['fa', fullScreenStatus.depSalaries ? 'fa-compress' : 'fa-expand']" aria-hidden="true"></i>
+          </div>
+        </div>
+
+      </section>
+      <section class="screen-right">
+
+        <div id="right-top" :class="[fullScreenStatus.posNum ? 'fullscreen' : '']">
+          <!-- 职位占比图表 -->
+          <pos-num ref="posNum"></pos-num>
+          <div class="resize">
+            <!-- icon-compress-alt -->
+            <i @click="changeSize('posNum')" :class="['fa', fullScreenStatus.posNum ? 'fa-compress' : 'fa-expand']" aria-hidden="true"></i>
+          </div>
+        </div>
+
+        <div id="right-bottom" :class="[fullScreenStatus.jobNum ? 'fullscreen' : '']">
+          <!-- 职称占比图表 -->
+          <job-level-num ref="jobNum"></job-level-num>
+          <div class="resize">
+            <!-- icon-compress-alt -->
+            <i @click="changeSize('jobNum')" :class="['fa', fullScreenStatus.jobNum ? 'fa-compress' : 'fa-expand']" aria-hidden="true"></i>
+          </div>
+        </div>
+
+      </section>
+    </div>
   </div>
-
 </template>
 
 
 <script>
-import mapJson from 'echarts/map/json/china.json'
-import Seller from "@/components/sta/Seller";
+import mapJson from 'echarts/map/json/china.json';
+import EmpSalaries from "@/components/sta/EmpSalaries";
+import DepSalaries from "@/components/sta/DepSalaries";
+import DepNum from "@/components/sta/DepNum";
+import JobLevelNum from "@/components/sta/JobLevelNum";
+import PosNum from "@/components/sta/PosNum";
+import Map from "@/components/sta/Map";
+import {getThemeValue} from "@/utils/theme_utils";
+import mapState from "vuex/dist/vuex.mjs";
 
 export default {
   name: "StaAll",
   components: {
-    Seller
+    'empSalaries': EmpSalaries,
+    'single-map': Map,
+    'depSalaries': DepSalaries,
+    'depNum': DepNum,
+    'jobLevelNum': JobLevelNum,
+    'posNum': PosNum
   },
-  data() {
+  data () {
     return {
-      data: [], // 坐标点数据，格式 {name: 'xxx', value: [经度,纬度]}
-      option: {
-        title: {
-          left: 'center',
-          textStyle: {
-            fontSize: 16,
-          }
-        }
-      },
-    };
-  },
-  mounted() {
-    this.initEMap();
+      // 定义每一个图表的全屏状态
+      fullScreenStatus: {
+        depNum: false,
+        empSalaries: false,
+        mapRef: false,
+        jobNum: false,
+        posNum: false,
+        depSalaries: false
+      }
+    }
   },
   methods: {
-    initEMap() {
-        //注册地图
-        this.$echarts.registerMap('china', mapJson);
-        this.chart = this.$echarts.init(this.$refs.map);
-        this.renderMap('china');
-    },
-    getMapList() { //请求坐标点的方法
-      return new Promise((resolve) => {
-        serve.getMapList({}).then(res => {
-          this.data = res.data
-          resolve()
-        })
+    changeSize (chartName) {
+      // 1.改变fullScreenStatus的数据
+      this.fullScreenStatus[chartName] = !this.fullScreenStatus[chartName]
+      // 2.需要调用每一个图表组件的screenAdapter的方法
+      this.$refs[chartName].screenAdapter()
+      this.$nextTick(() => {
+        this.$refs[chartName].screenAdapter()
       })
     },
-    renderMap(map) { //绘制地图
-      this.option.title.subtext = "";
-      //地理坐标系组件
-      this.option.geo = {//引入地图 ，渲染地图凹凸显示
-        map: map,
-        label: {
-          normal: {
-            show: true,
-            color: '#fff'
-          },
-          emphasis: {
-            show: false,
-            color: '#fff'
-          }
-        },
-        roam: true,//禁止缩放
-        zoom: 1,
-        itemStyle: {
-          normal: {
-            borderColor: '#2D8AFF',//地图边界线的颜色
-            areaColor: '#2D8AFF',//地图整体区域的颜色
-            shadowColor: '#226BCB',// 阴影颜色
-            shadowBlur: 10,
-            shadowOffsetY: 10
-          },
-          emphasis: {
-            areaColor: '#0062E8'//鼠标滑过的颜色
-          }
-        }
-      },
-          // 地图标点
-          this.option.series = [
-            {
-              name: '点',
-              type: 'scatter',
-              coordinateSystem: 'geo',
-              symbol: 'pin', //关系图节点标记的图形
-              symbolSize: [20, 20],
-              symbolOffset: [0, '-40%'],//关系图节点标记相对于原本位置的偏移。[0, '50%']
-              large: true,
-              itemStyle: {//===============图形样式，有 normal 和 emphasis 两个状态。normal 是图形在默认状态下的样式；emphasis 是图形在高亮状态下的样式，比如在鼠标悬浮或者图例联动高亮时。
-                normal: { //默认样式
-                  label: {
-                    show: true
-                  },
-                  borderType: 'solid', //图形描边类型，默认为实线，支持 'solid'（实线）, 'dashed'(虚线), 'dotted'（点线）。
-                  borderColor: '#30CEDA', //设置图形边框为淡金色,透明度为0.4
-                  borderWidth: 1, //图形的描边线宽。为 0 时无描边。
-                  opacity: 1,
-                  color: ' #30CEDA',
-                  // 图形透明度。支持从 0 到 1 的数字，为 0 时不绘制该图形。默认0.5
-
-                },
-                emphasis: {//高亮状态，格式同normal
-
-                }
-              },
-              lineStyle: { //==========关系边的公用线条样式。
-                normal: {
-                  color: '#30CEDA',
-                  width: '3',
-                  type: 'dotted', //线的类型 'solid'（实线）'dashed'（虚线）'dotted'（点线）
-                  curveness: 0.3, //线条的曲线程度，从0到1
-                  opacity: 1
-                  // 图形透明度。支持从 0 到 1 的数字，为 0 时不绘制该图形。默认0.5
-                },
-                emphasis: {//高亮状态
-
-                }
-              },
-              label: { //=============图形上的文本标签
-                normal: {
-                  show: false,//是否显示标签。
-                  position: 'inside',//标签的位置。['50%', '50%'] [x,y]
-                  textStyle: { //标签的字体样式
-                    color: '#cde6c7', //字体颜色
-                    fontStyle: 'normal',//文字字体的风格 'normal'标准 'italic'斜体 'oblique' 倾斜
-                    fontWeight: 'bolder',//'normal'标准'bold'粗的'bolder'更粗的'lighter'更细的或100 | 200 | 300 | 400...
-                    fontFamily: 'sans-serif', //文字的字体系列
-                    fontSize: 12, //字体大小
-                  }
-                },
-                emphasis: {//高亮状态
-
-                }
-              },
-              edgeLabel: {//==============线条的边缘标签
-                normal: {
-                  show: false
-                },
-                emphasis: {//高亮状态
-                }
-              },
-              zlevel: 12,
-              data: this.data,
-            }
-          ];
-      //渲染地图
-      this.chart.setOption(this.option);
+    // 接收到全屏数据之后的处理
+    recvData (data) {
+      // 取出是哪一个图表需要进行切换
+      const chartName = data.chartName
+      // 取出, 切换成什么状态
+      const targetValue = data.value
+      this.fullScreenStatus[chartName] = targetValue
+      this.$nextTick(() => {
+        this.$refs[chartName].screenAdapter()
+      })
+    },
+    handleChangeTheme () {
+      // 修改VueX中数据
+      // this.$store.commit('changeTheme')
+      this.$socket.send({
+        action: 'themeChange',
+        socketType: 'themeChange',
+        chartName: '',
+        value: ''
+      })
+    },
+    recvThemeChange () {
+      this.$store.commit('changeTheme')
     }
-  }
+  },
 }
 </script>
 
-<style scoped>
+<style lang="less" scoped>
+// 全屏样式的定义
+.fullscreen {
+  position: fixed!important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  margin: 0 !important;
+  z-index: 100;
+}
 
+.screen-container {
+  width: 100%;
+  height: 100%;
+  padding: 10px 10px;
+  background-color: #161522;
+  color: #fff;
+  box-sizing: border-box;
+}
+.screen-body {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  .screen-left {
+    height: 100%;
+    width: 27.6%;
+    #left-top {
+      height: 53%;
+      position: relative;
+    }
+    #left-bottom {
+      height: 45%;
+      margin-top: 10px;
+      position: relative;
+    }
+  }
+  .screen-middle {
+    height: 100%;
+    width: 50%;
+    margin-left: 1.6%;
+    margin-right: 1.6%;
+    #middle-top {
+      width: 100%;
+      height: 56%;
+      position: relative;
+    }
+    #middle-bottom {
+      margin-top: 10px;
+      width: 100%;
+      height: 42%;
+      position: relative;
+    }
+  }
+  .screen-right {
+    height: 100%;
+    width: 27.6%;
+    #right-top {
+      height: 53%;
+      position: relative;
+    }
+    #right-bottom {
+      height: 45%;
+      margin-top: 10px;
+      position: relative;
+    }
+  }
+}
+.resize {
+  position: absolute;
+  right: 20px;
+  top: 20px;
+  cursor: pointer;
+}
 </style>

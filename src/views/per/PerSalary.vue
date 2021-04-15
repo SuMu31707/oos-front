@@ -65,15 +65,15 @@
           >删除
           </el-button>
         </el-col>
-        <el-col :span="1.5">
-          <el-button
-              type="warning"
-              plain
-              icon="el-icon-download"
-              size="small"
-          >导出
-          </el-button>
-        </el-col>
+<!--        <el-col :span="1.5">-->
+<!--          <el-button-->
+<!--              type="warning"-->
+<!--              plain-->
+<!--              icon="el-icon-download"-->
+<!--              size="small"-->
+<!--          >导出-->
+<!--          </el-button>-->
+<!--        </el-col>-->
       </el-row>
 
       <el-table

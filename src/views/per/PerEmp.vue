@@ -309,16 +309,16 @@
         </el-table-column>
         <el-table-column
             fixed="right"
-            width="200"
+            width="100"
             label="操作"
             align="center">
           <template slot-scope="scope">
-            <el-button style="padding: 3px" size="mini"
+            <el-button type="primary" style="padding: 3px" size="mini"
                        @click="showEditEmpView(scope.row)">编辑
             </el-button>
-            <el-button style="padding: 3px" size="mini"
-                       type="primary">查看高级资料
-            </el-button>
+<!--            <el-button style="padding: 3px" size="mini"-->
+<!--                       type="primary">查看高级资料-->
+<!--            </el-button>-->
             <el-button style="padding: 3px" size="mini"
                        type="danger" @click="deleteEmp(scope.row)">删除
             </el-button>
@@ -346,7 +346,7 @@
                           prefix-icon="el-icon-edit"></el-input>
               </el-form-item>
             </el-col>
-            <el-col :span="5" >
+            <el-col :span="5">
               <el-form-item label="性别：" prop="gender">
                 <el-radio-group v-model="emp.gender" style="margin-top: 9px">
                   <el-radio label="男">男</el-radio>
@@ -580,6 +580,21 @@
               </el-form-item>
             </el-col>
           </el-row>
+          <el-row>
+            <el-col :span="8">
+              <el-form-item label="工资账套" prop="salaryId">
+                <el-select clearable v-model="emp.salaryId"
+                           placeholder="请选择账套">
+                  <el-option
+                      v-for="item in salaries"
+                      :key="item.id"
+                      :label="item.name"
+                      :value="item.id">
+                  </el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
         </el-form>
       </div>
       <span slot="footer" class="dialog-footer">
@@ -623,6 +638,7 @@ export default {
       joblevels: [],
       politicsstatus: [],
       positions: [],
+      salaries: [],
       popVisible: false,
       popVisible2: false,
       allDeps: [],
@@ -658,7 +674,8 @@ export default {
         notWorkDate: '',
         beginContract: '',
         endContract: '',
-        workAge: null
+        workAge: null,
+        salaryId: null
       },
       rules: {
         name: [{
@@ -765,8 +782,20 @@ export default {
           required: true, message: '请输入合同起始日期',
           trigger: 'blur'
         }],
+        conversionTime: [{
+          required: true, message: '请输入转正日期',
+          trigger: 'blur'
+        }],
+        endContract: [{
+          required: true, message: '请输入合同截止日期',
+          trigger: 'blur'
+        }],
         workAge: [{
           required: true, message: '请输入工龄', trigger:
+              'blur'
+        }],
+        salaryId: [{
+          required: true, message: '请选择工资账套', trigger:
               'blur'
         }],
       }
@@ -831,6 +860,7 @@ export default {
       this.title = '编辑员工';
       this.emp = data;
       this.inputDepName = data.department.name;
+      this.initSalaries();
       this.dialogVisible = true;
     },
     deleteEmp(data) {
@@ -891,6 +921,13 @@ export default {
       this.getRequest('/employee/basic/positions').then(resp => {
         if (resp) {
           this.positions = resp;
+        }
+      })
+    },
+    initSalaries() {
+      this.getRequest('/salary/sob/').then(resp => {
+        if (resp) {
+          this.salaries = resp;
         }
       })
     },
@@ -978,6 +1015,7 @@ export default {
       this.dialogVisible = true;
       this.getMaxWorkID();
       this.initPositions();
+      this.initSalaries();
     },
     sizeChange(currentSize) {
       this.size = currentSize;
