@@ -2,10 +2,10 @@
   <div>
     <div style="margin-top: 10px">
       <el-form :model="queryParams" ref="queryForm" :inline="true" label-width="68px">
-        <el-form-item label="员工姓名" prop="name">
+        <el-form-item label="规则名称" prop="name">
           <el-input
               v-model="queryParams.name"
-              placeholder="请输入员工姓名..."
+              placeholder="请输入规则名称..."
               clearable
               @clear="initEcRules"
               size="small"
@@ -27,7 +27,7 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="奖惩时间">
+        <el-form-item label="创建时间">
           <el-date-picker
               v-model="queryParams.beginDateScope"
               size="small"
